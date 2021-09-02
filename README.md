@@ -1,21 +1,28 @@
-# Getting Started
+# spring-external-config-aws
 
-### Reference Documentation
+Sample spring app with a configuration externalised to AWS Parameter Store. 
+Based on [this article](https://towardsaws.com/how-to-externalize-spring-boot-properties-to-an-aws-system-manager-parameter-store-2a945b1e856f).
 
-For further reference, please consider the following sections:
+## How to run
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.5.4/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.5.4/maven-plugin/reference/html/#build-image)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.5.4/reference/htmlsingle/#boot-features-developing-web-applications)
-* [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/2.5.4/reference/htmlsingle/#production-ready)
-
-### Guides
-
-The following guides illustrate how to use some features concretely:
-
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
-* [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
-
+1. Login to AWS Console
+2. Go to "My Security Credentials"
+3. Create and download new Access Key
+4. Install [AWS CLI](https://aws.amazon.com/cli/)
+5. Configure AWS CLI with Access Key created earlier:
+    ```
+    aws configure
+    ```
+   This wil create `<user_home>/.aws/credentials` file with access key details
+6. Go to Systems Manager Parameter Store
+7. Create three standard string parameters:
+   ```
+   /config/application/server.port = 8442
+   /config/springExternalConfigAws/management.endpoints.web.exposure.include = env
+   /config/springExternalConfigAws/my/useful/param = super-value
+   ```
+8. You may want to add `AWS_EC2_METADATA_DISABLED=true` env var to see less EC2 exception stack traces 
+   during the application startup
+9. Run spring-boot app
+10. It should print values of `my.useful.param` and `management.endpoints.web.exposure.include` properties
+11. Variable values can be found at actuator endpoint here: http://localhost:8442/actuator/env
